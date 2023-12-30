@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyz
+*.pyw
+*.pyz
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+*.pyc
+*.pyo
+*.pyd
+*.env
+
+# IDE
+.idea/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+*.pyz
+*.pyw
+*.pyz
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Type checking
+*.pyi
+
+# mypy
+.mypy_cache/
+
+# Pytest
+pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# FastAPI specific
+__pycache__/
