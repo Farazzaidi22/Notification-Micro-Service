@@ -4,12 +4,8 @@ from app.api.notifications import router as notifications
 
 
 from app.db.database import engine, Base
-from app.models.notification import NotificationModel
 
-app = FastAPI()
-
-print("\n\n\n\n\n\n\n" , engine, "engine", "\n\n\n\n\n\n\n" ,)
-
+app = FastAPI(debug=True)
 
 # Use the `notifications` object directly without accessing `router` attribute
 app.include_router(notifications, prefix="/v1")
