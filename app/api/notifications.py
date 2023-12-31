@@ -1,6 +1,5 @@
 # app/api/notifications.py
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
 from app.db.database import get_db as get_database
 from app.models.notification import NotificationModel
 from app.redis_queue.queue import background_send_notification
