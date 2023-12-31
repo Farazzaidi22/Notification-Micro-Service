@@ -9,23 +9,6 @@ from typing import List, Any
 
 router = APIRouter()
 
-
-@router.get("/notifications/", response_model=List[NotificationResponse])
-def get_notifications(org_id: int, receiver: int, end: int, pagination: Pagination = Depends())  -> Any:
-    # Create a new session using the global engine
-    db = get_database()
-
-    try:
-        skip = (pagination.page - 1) * pagination.per_page
-        limit = pagination.per_page
-
-        notifications = db.query(NotificationModel).offset(skip).limit(limit).all()
-        
-        # Convert SQLAlchemy objects to Pydantic models
-        return notifications
-    finally:
-        db.close()
-
 @router.post("/notifications/", response_model=NotificationResponse)
 def create_notification(notification: CreateNotification) -> Any:
     
@@ -43,3 +26,21 @@ def create_notification(notification: CreateNotification) -> Any:
     background_tasks.add_task(background_send_notification, notification)
     
     return db_notification
+
+
+
+@router.get("/notifications/", response_model=List[NotificationResponse])
+def get_notifications(org_id: int, receiver: int, end: int, pagination: Pagination = Depends())  -> Any:
+    # Create a new session using the global engine
+    db = get_database()
+
+    try:
+        skip = (pagination.page - 1) * pagination.per_page
+        limit = pagination.per_page
+
+        notifications = db.query(NotificationModel).offset(skip).limit(limit).all()
+        
+        # Convert SQLAlchemy objects to Pydantic models
+        return notifications
+    finally:
+        db.close()
