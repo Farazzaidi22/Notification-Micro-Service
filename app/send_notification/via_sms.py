@@ -1,4 +1,5 @@
 from app.models.notification import NotificationModel
+from typing import List
 
 
 async def send_notification_sms(notification: NotificationModel, phone_numbers: List[str]):
