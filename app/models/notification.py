@@ -1,3 +1,5 @@
+# app/models/notification.py
+
 from sqlalchemy import Column, Integer, String, ARRAY, DateTime
 from sqlalchemy.sql import func
 from app.db.database import Base
