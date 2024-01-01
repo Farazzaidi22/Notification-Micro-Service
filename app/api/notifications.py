@@ -69,3 +69,6 @@ async def get_notification(notification_id: int, background_tasks: BackgroundTas
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     finally:
         db.close()
+        
+        
+        
