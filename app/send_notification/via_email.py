@@ -1,34 +1,28 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-from typing import List
-from app.models.notification import NotificationModel
+import json
+import aioredis
 
+async def send_email(subject: str, message: str, recipient: str):
+    # Replace this with your actual email sending logic
+    print(f"Sending email to {recipient}: {subject}, {message}")
 
-async def send_notification_email(notification: NotificationModel, emails: List[str]):
-    # Email configuration (replace placeholders with actual values)
-    smtp_server = 'your_smtp_server'
-    smtp_port = 587
-    smtp_username = 'your_smtp_username'
-    smtp_password = 'your_smtp_password'
-    sender_email = 'your_sender_email@example.com'
-    subject = 'Notification from Your App'
+async def process_email_queue(redis_url: str):
+    redis = await aioredis.from_url(redis_url)
 
-    # Construct the email message
-    message = MIMEMultipart()
-    message['From'] = sender_email
-    message['To'] = ', '.join(emails)
-    message['Subject'] = subject
+    while True:
+        # Dequeue an email task
+        email_task = await redis.brpop('email_queue', timeout=10)
 
-    # Add the notification message to the email body
-    body = f"Notification Message:\n\n{notification.message}"
-    message.attach(MIMEText(body, 'plain'))
+        if email_task is None:
+            # No task found, wait and try again
+            continue
 
-    # Connect to the SMTP server and send the email
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_username, smtp_password)
-        server.sendmail(sender_email, emails, message.as_string())
+        _, json_data = email_task
+        email_data = json.loads(json_data)
 
-    print(f"Email notification sent to {emails}: {notification.dict()}")
+        # Extract email details from the task
+        subject = email_data.get("subject")
+        message = email_data.get("message")
+        recipients = email_data.get("recipients")
+
+        # Process the email task
+        await send_email(subject, message, recipients)

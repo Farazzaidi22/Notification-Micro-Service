@@ -5,6 +5,9 @@ from app.models.notification import NotificationModel
 from app.models.response import NotificationResponse, CreateNotification
 from app.api.pagination import Pagination
 from typing import List, Any
+import aioredis
+
+from app.redis_queue.queue import send_notification
 
 router = APIRouter()
 
@@ -49,7 +52,7 @@ def get_notifications(org_id: int, receiver: int, end: int, pagination: Paginati
 
 
 @router.get("/notifications/{notification_id}", response_model=NotificationResponse)
-def get_notification(notification_id: int) -> Any:
+async def get_notification(notification_id: int, background_tasks: BackgroundTasks) -> Any:
     try:
         # Create a new session using the global engine
         db = get_database()
