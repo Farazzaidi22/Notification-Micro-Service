@@ -4,7 +4,8 @@ from typing import List
 
 class NotificationResponse(BaseModel):
     id: int
-    origin: str
+    org_id: int
+    sender: str
     receivers: List[int]
     ends: List[int]
     severity: int
@@ -15,7 +16,8 @@ class NotificationResponse(BaseModel):
 
 
 class CreateNotification(BaseModel):
-    origin: str
+    sender: str
+    org_id: int
     receivers: List[int]
     ends: List[int]
     severity: int

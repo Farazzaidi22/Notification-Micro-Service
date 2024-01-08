@@ -40,7 +40,18 @@ def get_notifications(org_id: int, receiver: int, end: int, pagination: Paginati
         skip = (pagination.page - 1) * pagination.per_page
         limit = pagination.per_page
 
-        notifications = db.query(NotificationModel).offset(skip).limit(limit).all()
+        query = db.query(NotificationModel)
+
+        if org_id is not None:
+            query = query.filter(NotificationModel.org_id == org_id)
+
+        if receiver is not None:
+            query = query.filter(NotificationModel.receivers.contains([receiver]))
+
+        if end is not None:
+            query = query.filter(NotificationModel.ends.contains([end]))
+
+        notifications = query.offset(skip).limit(limit).all()
 
         # Convert SQLAlchemy objects to Pydantic models
         return notifications
