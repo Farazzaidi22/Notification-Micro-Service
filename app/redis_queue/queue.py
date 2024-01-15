@@ -38,7 +38,7 @@ from app.models.notification import NotificationModel
 
 
 
-# REDIS_CLIENT = Redis.from_url('redis://127.0.0.1:6380')
+REDIS_CLIENT = Redis(host='redis', port=6379, db=0)
 
 def send_notification_to_queue(notification: NotificationModel):
     # Connect to Redis
@@ -47,7 +47,6 @@ def send_notification_to_queue(notification: NotificationModel):
     print("here here 2")
      
     try:
-        REDIS_CLIENT = Redis(host='redis', port=6379, db=0)
         print("\n\n\n\n\n\n\n\nREDIS_CLIENT", REDIS_CLIENT , "\n\n\n\n\n\n\n\n")
         
 
@@ -69,14 +68,11 @@ def send_notification_to_queue(notification: NotificationModel):
     #     pass
 
 def fetch_notification_from_queue():
-    # Connect to Redis
-    # redis_client = redis.StrictRedis(host='localhost', port=6380, db=0)
 
     try:
         # Fetch notifications from the Redis queue
-        # notifications = redis_client.lrange('notifications_queue', 0, -1)
-        # return [eval(notification) for notification in notifications]
-        return "dasdasdasdas"
+        notifications = REDIS_CLIENT.lrange('notifications_queue', 0, -1)
+        return [eval(notification) for notification in notifications]
     finally:
         # No need to explicitly close the connection with the 'redis' library
         pass

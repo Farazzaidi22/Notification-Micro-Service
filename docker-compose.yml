@@ -13,6 +13,7 @@ services:
       - db
       - redis
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOSTNAME=${DB_HOSTNAME}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
