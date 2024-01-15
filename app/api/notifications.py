@@ -7,7 +7,7 @@ from app.api.pagination import Pagination
 from typing import List, Any
 import aioredis
 
-from app.redis_queue.queue import send_notification
+from app.redis_queue.queue import fetch_notification_from_queue, send_notification_to_queue
 
 router = APIRouter()
 
@@ -22,6 +22,9 @@ def create_notification(notification: CreateNotification) -> Any:
         db.add(db_notification)
         db.commit()
         db.refresh(db_notification)
+        
+        
+        send_notification_to_queue(db_notification)
 
         return db_notification
 
@@ -80,6 +83,16 @@ async def get_notification(notification_id: int, background_tasks: BackgroundTas
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     finally:
         db.close()
-        
-        
-        
+
+
+
+@router.get("/notifications/queue", response_model=List[NotificationResponse])
+def fetch_notifications_from_queue() -> Any:
+    try:
+        # Fetch notifications from the Redis queue
+        notifications = fetch_notification_from_queue()
+
+        return notifications
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
