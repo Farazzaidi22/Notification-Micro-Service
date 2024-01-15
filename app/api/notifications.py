@@ -22,7 +22,10 @@ def create_notification(notification: CreateNotification, background_tasks: Back
         db.commit()
         db.refresh(db_notification)
         
+        print(db_notification, "here here")
+        
         send_notification_to_queue(db_notification)
+        print(db_notification, "db_notification")
 
         return db_notification
 
