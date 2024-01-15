@@ -22,7 +22,6 @@ def create_notification(notification: CreateNotification, background_tasks: Back
         db.commit()
         db.refresh(db_notification)
         
-        
         send_notification_to_queue(db_notification)
 
         return db_notification

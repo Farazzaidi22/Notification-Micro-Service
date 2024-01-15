@@ -10,22 +10,16 @@ REDIS_CLIENT = Redis(host='redis', port=6379, db=0)
 
 def send_notification_to_queue(notification: NotificationModel):
     try:
-        REDIS_CLIENT.rpush('NOTIFICATION_QUEUE', notification)
-        REDIS_CLIENT.set('my-first-key', 'code-always')
+        # Push the notification to the Redis queue
+        REDIS_CLIENT.rpush('notifications_queue', str(notification))
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Here here: {str(e)}")
-    finally:
-        pass
- 
+        raise HTTPException(status_code=500, detail=f"Error pushing to Redis queue: {str(e)}")
 
 def fetch_notification_from_queue():
-
     try:
-        # Fetch notifications from the Redis queue
-        notifications = REDIS_CLIENT.get('notifications_queue', 0)
+        # Fetch all notifications from the Redis queue
+        notifications = REDIS_CLIENT.lrange('notifications_queue', 0, -1)
         return [eval(notification) for notification in notifications]
-    finally:
-        # No need to explicitly close the connection with the 'redis' library
-        pass
-
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching from Redis queue: {str(e)}")
