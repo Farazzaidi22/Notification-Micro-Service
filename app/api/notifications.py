@@ -1,10 +1,11 @@
 # app/api/notifications.py
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from app.db.database import get_db as get_database
 from app.models.notification import NotificationModel
 from app.models.response import NotificationResponse, CreateNotification
 from app.api.pagination import Pagination
-from typing import List, Any
+from typing import List, Dict, Union, Any
 
 from app.redis_queue.queue import fetch_notification_from_queue, send_notification_to_queue
 
@@ -22,10 +23,9 @@ def create_notification(notification: CreateNotification, background_tasks: Back
         db.commit()
         db.refresh(db_notification)
         
-        print(db_notification, "here here")
-        
-        send_notification_to_queue(db_notification)
-        print(db_notification, "db_notification")
+        # Print the decoded values of db_notification
+        decoded_notification = jsonable_encoder(db_notification)        
+        send_notification_to_queue(decoded_notification)
 
         return db_notification
 
@@ -87,13 +87,13 @@ async def get_notification(notification_id: int, background_tasks: BackgroundTas
 
 
 
-@router.get("/notifications/queue", response_model=List[NotificationResponse])
+@router.get("/queue/notifications/", response_model=List[NotificationResponse])
 def fetch_notifications_from_queue() -> Any:
+ 
     try:
         # Fetch notifications from the Redis queue
         notifications = fetch_notification_from_queue()
-
+        
         return notifications
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
